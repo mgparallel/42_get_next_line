@@ -33,7 +33,7 @@ char	*ft_substr(char const *s, unsigned int start, size_t len)
 	return (result);
 }
 
-char	*concat_str(char *buffer, char *stash, size_t bytes_stash)
+char	*concat_str(char *buffer, char *stash)
 {
 	int	i;
 	int	j;
@@ -41,7 +41,7 @@ char	*concat_str(char *buffer, char *stash, size_t bytes_stash)
 	int	len_stash;
 	char	*result;
 
-	result = (char *)malloc(bytes_stash + sizeof(buffer) + 1); //need free
+	result = (char *)malloc(sizeof(stash) + sizeof(buffer) + 1); //need free
 	if (!result)
 		return (NULL);
 	len_buffer = ft_strlen(buffer);

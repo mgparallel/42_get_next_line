@@ -6,10 +6,11 @@
 #include <fcntl.h>
 
 char    *ft_substr(char const *s, unsigned int start, size_t len);
-char    *concat_str(char *buffer, char *stash, size_t bytes_stash);
+char    *concat_str(char *buffer, char *stash);
 
-size_t	if_new_line(int fd, char *buffer, int bytes_read, char *stash)
+char	*if_new_line(char *buffer, int bytes_read)
 {
+	static char	*stash;
 	int 	i;
 	size_t	position_n;
 	size_t	bytes_stash;
@@ -17,6 +18,7 @@ size_t	if_new_line(int fd, char *buffer, int bytes_read, char *stash)
 	i = 0;
 	position_n = 0;
 	bytes_stash = 0;
+	stash = NULL;
 	while (buffer[i])
 	{
 		if (buffer[i] != '\n')
@@ -29,53 +31,54 @@ size_t	if_new_line(int fd, char *buffer, int bytes_read, char *stash)
 		}
 		i++;
 	}
-	if (i == bytes_read)
+	if (bytes_stash == 0)
 	{
-		stash = ft_substr(stash, 0, i);
-		get_next_line(fd);
+		buffer = ft_substr(buffer, 0, i);
+		return (NULL);
 	}
 	while (buffer[i++])
 	{
 		*stash = buffer[i];
 		stash++;
 	}
-	return (bytes_stash);
+	return (stash);
 }
 
-char	*return_buffer(size_t position_n, char *buffer, char *stash)
+char	*return_buffer(char *buffer, char *stash)
 {
 	if (stash)
-		buffer = concat_str(buffer, stash, position_n);
+		buffer = concat_str(buffer, stash);
 	return (buffer);
 }
 
 char	*get_next_line(int fd)
 {
-	static char	*stash;
 	char	*buffer;
 	int	bytes_read;
-	size_t	position_n;
+	char	*stash;
 	
 	if (fd == -1 || fd == 0) //come back here fd = 0 should be corner case
 		return (NULL);
-	buffer = (char *)malloc(BUFFER_SIZE + 1);
+	buffer = (char *)malloc(BUFFER_SIZE);
 	if (!buffer)
 		return (NULL);
 	bytes_read = read(fd, buffer, BUFFER_SIZE);
 	printf("\nbytes_read :%i\n", bytes_read);
 	if (bytes_read == -1)
 	{
-		printf("bytes read\n");
+		printf("bytes read -1, error!\n");
                 return (NULL);
 	}
 	/*if (bytes_read == 0)
                 */
-	stash = NULL;
 	if (bytes_read > 0)
 	{
-		position_n = if_new_line(fd, buffer, bytes_read, stash);
-		printf("FLAG!%zu", position_n);
-		buffer = return_buffer(position_n, buffer, stash);
+		stash = if_new_line(buffer, bytes_read);
+		printf("\ncheck stash: %s\n", stash);
+		if (stash == NULL)
+			get_next_line(fd);
+		else
+			buffer = return_buffer(buffer, stash);
 	}
 	return (buffer);
 }
@@ -86,17 +89,15 @@ int	main(void)
 	char *line;
 
 	fd = open("one_line.txt", O_RDONLY);
-	printf("num fd%i\n", fd);
-	if (fd > 0)
-		line = get_next_line(fd);
-	else
-		line = NULL;
-	while (line)
+	printf("num fd: %i\n", fd);
+	if (fd == -1)
+		return 1;
+	//line = get_next_line(fd);
+	while ((line=get_next_line(fd)) != NULL)
 	{
-		//printf("entro main\n");
 		printf("%s\n", line);
-		//result = get_next_line(fd);
+		free(line);
 	}
-	free (line);
+	close(fd);
 	return (0);
 }
