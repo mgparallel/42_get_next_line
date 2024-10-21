@@ -55,3 +55,31 @@ char	*concat_str(char *buffer, char *stash)
 	result[i + j] = '\n';
 	return (result);
 }
+
+char	*ft_strchr(char *s, char ch)
+{
+	char	*ref;
+
+	ref = s;
+	while (*ref)
+	{
+		if (*ref == ch)
+			break ;
+		ref++;
+	}
+	return (*ref);
+}
+
+char	*ft_strdup(char *s)
+{
+	char	*temp;
+	char	*result;
+
+	temp = s;
+	while (*temp)
+	{
+		*result = *temp
+		temp++;
+	}
+	return (result);
+}
