@@ -1,2 +1,2 @@
-This is a text file with a first line
-and a second line. 
+This is a text file with a first line and I'm long
+this is a second line.

@@ -60,6 +60,8 @@ char	*ft_strchr(char *s, char ch)
 {
 	char	*ref;
 
+	if (!s)
+		return (NULL);
 	ref = s;
 	while (*ref)
 	{
@@ -67,7 +69,9 @@ char	*ft_strchr(char *s, char ch)
 			break ;
 		ref++;
 	}
-	return (*ref);
+	if (*ref == '\0')
+		return (NULL);
+	return (ref);
 }
 
 char	*ft_strdup(char *s)
@@ -76,9 +80,10 @@ char	*ft_strdup(char *s)
 	char	*result;
 
 	temp = s;
+	result = NULL;
 	while (*temp)
 	{
-		*result = *temp
+		*result = *temp;
 		temp++;
 	}
 	return (result);
