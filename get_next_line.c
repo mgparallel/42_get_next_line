@@ -6,28 +6,42 @@
 #include <fcntl.h>
 
 size_t  ft_strlen(char *str);
-char    *ft_substr(char const *s, unsigned int start, size_t len);
-char    *concat_str(char *buffer, char *stash);
-char    *ft_strdup(char *s);
-char    *ft_strchr(char *s, char ch);
+char	*ft_substr(char const *s, unsigned int start, size_t len);
+char    *ft_strjoin(char *s1, char *s2, char *total_buffer);
+//char    *concat_str(char *buffer, char *stash);
+char    *ft_strdup(char *s, char *result);
+int    ft_strchr(char *s, char ch);
 
 char	*fill_in_line(char **stash)
 {
-	char	*pos_n;
+	int 	pos_n;
 	char	*line;
 	int	len_stash;
+	char	*new_stash;
 
 	if (!*stash)
-		return (NULL);
-	len_stash = (int)ft_strlen(*stash);
-	line = NULL;
-	pos_n = ft_strchr(*stash, '\n');
-	if (!pos_n)
 	{
-		line[len_stash] = '\0';
-		line = ft_strdup(*stash);
+		*stash = malloc(1);
+		**stash = '\0';
+	}	
+	len_stash = (int)ft_strlen(*stash);
+	pos_n = ft_strchr(*stash, '\n');
+	printf("VALUE POS_N: %d", pos_n);
+	if (pos_n == 0)
+	{
+		line = (char *)malloc(len_stash + 1);
+		line = ft_strdup(*stash, line);
+		*stash = NULL;
 	}
-	line = ft_substr(*stash, pos_n - *stash, len_stash - (pos_n - *stash));
+	else
+	{
+		line = ft_substr(*stash, 0, pos_n + 2);
+		new_stash = ft_substr(*stash, pos_n + 1, len_stash - pos_n + 1);
+		free(*stash);
+		new_stash[len_stash - pos_n] = '\0';
+		*stash = new_stash;
+	}
+	printf("\n\ntest line: %s", line);
 	return (line);
 }
 /*
@@ -57,11 +71,12 @@ char	*get_next_line(int fd)
 	//printf("\nfirst buffer:%s\n", buffer);
 	while (bytes_read > 0)
 	{
-		char	*check = ft_strchr(buffer, '\n');
-		//printf("\ncheck: %s", check);
-		if (check != NULL)
+		if (total_buffer != NULL)
+			buffer = total_buffer;
+		printf("\nCHECK buffer:%s\n", buffer);
+		if (ft_strchr(buffer, '\n') != 0)
 		{
-			stash = ft_substr(buffer, 0, check - buffer);
+			stash = ft_substr(buffer, 0, (size_t)(ft_strchr(buffer, '\n')));
 			break ;
 		}
 		else
@@ -70,22 +85,23 @@ char	*get_next_line(int fd)
 			if (!second_buffer)
 				return (NULL);
 			bytes_read = read(fd, second_buffer, BUFFER_SIZE);
+			//printf("\n\nBYTES: %d", bytes_read);
 			second_buffer[bytes_read] = '\0';
-			total_buffer = (char *)malloc(sizeof(buffer) + sizeof(second_buffer) + 1);
+			total_buffer = (char *)malloc(ft_strlen(buffer) + bytes_read + 1);
 			if (!total_buffer)
 				return (NULL);
-			total_buffer = concat_str(buffer, second_buffer);
-			free(buffer);
+			printf("\nsecond buffer: %s", second_buffer);
+			total_buffer = ft_strjoin(buffer, second_buffer, total_buffer);
+			//printf("\n\nTOTAL Buffer: %s", total_buffer);
 			free(second_buffer);
-			//printf("\n\nsecond bytes__read: %d", bytes_read);
 		}
 	}
-	if (!buffer || !stash)
+	/*if (!buffer || !stash)
 	{
 		free(buffer);
 		free(stash);
 		return (NULL);
-	}
+	}*/
 	printf("\ncheck stash: %s", stash);
 	return (fill_in_line(&stash));
 }
@@ -101,6 +117,7 @@ int	main(void)
 		return (1);
 	while ((line = get_next_line(fd)) != NULL)
 	{
+		printf("\niteration: %d", fd);
 		printf("\nfinal: %s\n", line);
 		free(line);
 	}

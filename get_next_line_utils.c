@@ -33,6 +33,31 @@ char	*ft_substr(char const *s, unsigned int start, size_t len)
 	return (result);
 }
 
+char    *ft_strjoin(char *s1, char *s2, char *total_buffer)
+{
+        int     i;
+        int     j;
+
+	if (!s1)
+		return (NULL);
+        if (!s2)
+                return (s1);
+        i = 0;
+        j = 0;
+        while (s1[i])
+        {
+                total_buffer[i] = s1[i];
+                i++;
+        }
+        while (s2[j])
+        {
+                total_buffer[i + j] = s2[j];
+                j++;
+        }
+        total_buffer[i + j] = '\0';
+        return (total_buffer);
+}
+/*
 char	*concat_str(char *buffer, char *stash)
 {
 	int	i;
@@ -54,37 +79,37 @@ char	*concat_str(char *buffer, char *stash)
 		result[i + j] = stash[j];
 	result[i + j] = '\n';
 	return (result);
-}
+}*/
 
-char	*ft_strchr(char *s, char ch)
+int	ft_strchr(char *s, char ch)
 {
-	char	*ref;
+	int	i;
 
 	if (!s)
-		return (NULL);
-	ref = s;
-	while (*ref)
+		return (0);
+	i = 0;
+	while (s[i])
 	{
-		if (*ref == ch)
+		if (s[i] == ch)
 			break ;
-		ref++;
+		i++;
 	}
-	if (*ref == '\0')
-		return (NULL);
-	return (ref);
+	if (s[i] == '\0')
+		return (0);
+	return (i);
 }
 
-char	*ft_strdup(char *s)
+char	*ft_strdup(char *s, char *result)
 {
-	char	*temp;
-	char	*result;
+	int	i;
 
-	temp = s;
-	result = NULL;
-	while (*temp)
+	if (!s | !result)
+		return (NULL);
+	i = 0;
+	while (s[i])
 	{
-		*result = *temp;
-		temp++;
+		result[i] = s[i];
+		i++;
 	}
 	return (result);
 }
