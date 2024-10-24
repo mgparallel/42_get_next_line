@@ -5,6 +5,8 @@ size_t	ft_strlen(char *str)
 	size_t	len;
 
 	len = 0;
+	if (!str)
+		return (len);
 	while (str[len])
 		len++;
 	return (len);
@@ -22,7 +24,7 @@ char	*ft_substr(char const *s, unsigned int start, size_t len)
 		len = 0;
 	else if (start + len > total_len)
 		len = total_len - start;
-	result = (char *)malloc((len + 1) * sizeof(char));
+	result = (char *)malloc((len + 1));
 	if (!result)
 		return (NULL);
 	result[len] = '\0';
@@ -33,29 +35,29 @@ char	*ft_substr(char const *s, unsigned int start, size_t len)
 	return (result);
 }
 
-char    *ft_strjoin(char *s1, char *s2, char *total_buffer)
+char    *ft_strjoin(char *s1, char *s2)
 {
         int     i;
         int     j;
+	char	*result;
 
-	if (!s1)
+	result = (char *)malloc(ft_strlen(s1) + ft_strlen(s2) + 1);
+        if (!result)
 		return (NULL);
-        if (!s2)
-                return (s1);
-        i = 0;
+	i = 0;
         j = 0;
-        while (s1[i])
+        while (i < (int)ft_strlen(s1))
         {
-                total_buffer[i] = s1[i];
+                result[i] = s1[i];
                 i++;
         }
-        while (s2[j])
+        while (j < (int)ft_strlen(s2))
         {
-                total_buffer[i + j] = s2[j];
+                result[i + j] = s2[j];
                 j++;
         }
-        total_buffer[i + j] = '\0';
-        return (total_buffer);
+        result[i + j] = '\0';
+        return (result);
 }
 /*
 char	*concat_str(char *buffer, char *stash)
@@ -99,17 +101,18 @@ int	ft_strchr(char *s, char ch)
 	return (i);
 }
 
-char	*ft_strdup(char *s, char *result)
+char	*ft_strdup(char *s)
 {
 	int	i;
+	char	*result;
 
-	if (!s | !result)
-		return (NULL);
+	result = (char *)malloc(ft_strlen(s) + 1);
 	i = 0;
 	while (s[i])
 	{
 		result[i] = s[i];
 		i++;
 	}
+	result[i] = '\0';
 	return (result);
 }
